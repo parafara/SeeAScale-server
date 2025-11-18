@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from tables import Account
+from model.tables import Account
 from utils.tokener import create_pretoken
 from utils.mail import send_mail
 from dotenv import load_dotenv

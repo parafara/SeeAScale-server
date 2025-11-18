@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response, Depends
 from fastapi.responses import JSONResponse
 from database import get_db
-from dto import PreRegisterDTO
+from model.dto import PreRegisterDTO
 from service.auth import verify_email_format, check_email_register_status, send_auth_mail
 
 router = APIRouter(prefix="/auth", tags=["/auth"])
