@@ -1,3 +1,6 @@
-fastapi
+cryptography
+hashids
 pymysql
+pyjwt
 sqlalchemy
+fastapi
