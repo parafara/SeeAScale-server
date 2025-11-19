@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, Depends
+from fastapi import APIRouter, Response, Cookie, Depends
 from fastapi.responses import JSONResponse
 from model.dto import PreRegisterDTO, RegisterDTO, LoginDTO
 from service.auth import (
@@ -108,3 +108,15 @@ def post_logout():
 
     return response
 
+@router.get("/info")
+def get_info(login_token: str | None = Cookie(default=None)):
+    if login_token is None:
+        return Response({"code":"NOT_LOGINED"}, status_code=401)
+    try:
+        token_payload = verify_token(login_token)
+    except InvalidSignatureError:
+        return JSONResponse({"code":"INVALID_TOKEN"}, status_code=401)
+    except ExpiredSignatureError:
+        return JSONResponse({"code":"EXPIRED_TOKEN"}, status_code=401)
+    
+    return {"user_name" : token_payload["user_name"]}
