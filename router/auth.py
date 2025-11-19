@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, Depends
 from fastapi.responses import JSONResponse
-from model.dto import PreRegisterDTO, RegisterDTO
+from model.dto import PreRegisterDTO, RegisterDTO, LoginDTO
 from service.auth import (
     verify_email_format,
     check_email_register_status,
@@ -10,12 +10,18 @@ from service.auth import (
     verify_password_format,
     register_user,
     create_login_token,
+    get_account_by_email,
+    check_account_password,
     InvalidSignatureError,
     ExpiredSignatureError
 )
 from database import get_db
+from dotenv import load_dotenv
+import os
 
-LOGIN_EXPIRE_PERIOD = 24 * 60 * 60
+load_dotenv()
+
+LOGIN_EXPIRE_PERIOD = int(os.getenv("LOGIN_EXPIRE_PERIOD"))
 
 router = APIRouter(prefix="/auth", tags=["/auth"])
 
@@ -60,9 +66,30 @@ def post_register(data: RegisterDTO, db=Depends(get_db)):
     if check_email_register_status(token_payload["email"], db):
         return JSONResponse({"code":"ALREADY_REGISTERED_EMAIL"}, status_code=400)
     
-    new_account = register_user(token_payload["email"], data.user_name, data.password, db)
-    login_token = create_login_token(new_account.user_id, LOGIN_EXPIRE_PERIOD)
+    login_token = register_user(token_payload["email"], data.user_name, data.password, db)
 
+    response = Response()
+    response.set_cookie(
+        key="login_token",
+        value=login_token, 
+        max_age=LOGIN_EXPIRE_PERIOD,
+        httponly=True,
+        samesite="strict"
+    )
+
+    return response
+
+@router.post("/login")
+def post_login(data: LoginDTO, db=Depends(get_db)):
+    account = get_account_by_email(data.email, db)
+    if account is None:
+        return JSONResponse({"code":"UNREGISTERED_EMAIL"}, status_code=400)
+    
+    if not check_account_password(account, data.password):
+        return JSONResponse({"code":"INCORRECT_PASSWORD"}, status_code=400)
+    
+    login_token = create_login_token(account.user_name, LOGIN_EXPIRE_PERIOD)
+    
     response = Response()
     response.set_cookie(
         key="login_token",
