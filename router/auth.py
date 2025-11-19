@@ -100,3 +100,11 @@ def post_login(data: LoginDTO, db=Depends(get_db)):
     )
 
     return response
+
+@router.post("/logout")
+def post_logout():
+    response = Response()
+    response.delete_cookie("login_token", httponly=True, samesite="strict")
+
+    return response
+
