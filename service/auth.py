@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from model.tables import Account
-from utils.tokener import create_pretoken
+from utils.tokener import create_pretoken, verify_token, InvalidSignatureError, ExpiredSignatureError
 from utils.mail import send_mail
 from dotenv import load_dotenv
 import os
@@ -20,8 +20,8 @@ def check_email_register_status(email: str, db: Session) -> bool:
     return not db.execute(statement).scalar_one_or_none() is None
 
 def send_auth_mail(email: str, expire: int = 300) -> None:
-    token = create_pretoken(email, expire)
+    pretoken = create_pretoken(email, expire)
     send_mail(
         To=email,
-        Message=f"{SERVICE_ADDRESS}/signup?pretoken={token}"
+        Message=f"{SERVICE_ADDRESS}/auth/preverify?pretoken={pretoken}"
     )
