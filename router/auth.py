@@ -15,6 +15,7 @@ from service.auth import (
     InvalidSignatureError,
     ExpiredSignatureError
 )
+from model.exceptions import LoginTokenExpiredException
 from database import get_db
 from dotenv import load_dotenv
 import os
@@ -117,6 +118,6 @@ def get_info(login_token: str | None = Cookie(default=None)):
     except InvalidSignatureError:
         return JSONResponse({"code":"INVALID_TOKEN"}, status_code=401)
     except ExpiredSignatureError:
-        return JSONResponse({"code":"EXPIRED_TOKEN"}, status_code=401)
+        raise LoginTokenExpiredException()
     
     return {"user_name" : token_payload["user_name"]}

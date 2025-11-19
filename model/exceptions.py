@@ -1,0 +1,2 @@
+class LoginTokenExpiredException(Exception):
+    pass
