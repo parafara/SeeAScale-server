@@ -89,7 +89,7 @@ def post_login(data: LoginDTO, db=Depends(get_db)):
     if not check_account_password(account, data.password):
         return JSONResponse({"code":"INCORRECT_PASSWORD"}, status_code=400)
     
-    login_token = create_login_token(account.user_name, LOGIN_EXPIRE_PERIOD)
+    login_token = create_login_token(account.user_id, account.user_name)
     
     response = Response()
     response.set_cookie(
@@ -120,4 +120,4 @@ def get_info(login_token: str | None = Cookie(default=None)):
     except ExpiredSignatureError:
         raise LoginTokenExpiredException()
     
-    return {"user_name" : token_payload["user_name"]}
+    return {"user_id": token_payload["user_id"], "user_name": token_payload["user_name"]}
