@@ -1,2 +1,0 @@
-class LoginTokenExpiredException(Exception):
-    pass

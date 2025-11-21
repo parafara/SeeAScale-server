@@ -9,7 +9,7 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
-def send_mail(To: str, Message: str):
+def send_preregister_mail(To: str, Message: str):
     msg = EmailMessage()
     msg.set_content(Message)
     msg['To'] = To
