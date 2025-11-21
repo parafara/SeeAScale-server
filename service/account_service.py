@@ -17,7 +17,6 @@ USER_NAME_FORMAT = re.compile(r"^[가-힣A-Za-z0-9_]+$")
 PASSWORD_FORMAT = re.compile(r"^[A-Za-z0-9!@#$-_.?]{8,}$")
 
 class AccountService:
-
     def __init__(self, repository: AccountRepository = Depends()):
         self.repository = repository
 
