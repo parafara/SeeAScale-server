@@ -7,3 +7,7 @@ class AccountCreateRequest(BaseModel):
     pretoken: str
     userName: str
     password: str
+
+class LoginRequest(BaseModel):
+    userEmail: str
+    password: str

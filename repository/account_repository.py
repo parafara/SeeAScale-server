@@ -8,8 +8,8 @@ class AccountRepository:
     def __init__(self, db: Session = Depends(get_db)):
         self.db=db
 
-    def get_account_by_email(self, email: str) -> Account | None:
-        return self.db.query(Account).filter_by(userEmail=email).first()
+    def get_account_by_userEmail(self, userEmail: str) -> Account | None:
+        return self.db.query(Account).filter_by(userEmail=userEmail).first()
     
     def create_account(self, userName, userEmail, password) -> Account:
         account = Account(userName=userName, userEmail=userEmail, passwordHash=hash_password(password))

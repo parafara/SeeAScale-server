@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from service.account_service import AccountService
-from model.account_model import PreregisterRequest, AccountCreateRequest
+from model.account_model import PreregisterRequest, AccountCreateRequest, LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["/auth"])
 
@@ -15,3 +15,7 @@ def verify_pretoken(pretoken: str, accountService: AccountService = Depends()):
 @router.post("/register")
 def create_account(request: AccountCreateRequest, accountService: AccountService = Depends()):
     return accountService.create_account(request)
+
+@router.post("/login")
+def login(request: LoginRequest, accountService: AccountService = Depends()):
+    return accountService.login(request)

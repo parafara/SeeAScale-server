@@ -1,9 +1,10 @@
 from fastapi import Response, HTTPException, Depends
 from repository.account_repository import AccountRepository
 from model.account_model import AccountCreateRequest, LoginRequest
+from schema import Account
 from utils.tokener import create_token, verify_token, jwt
 from utils.mail import send_preregister_mail
-from utils.crypto_tools import encode_id
+from utils.crypto_tools import hash_password, encode_id
 from dotenv import load_dotenv
 import os
 import re
@@ -24,7 +25,7 @@ class AccountService:
         if EMAIL_FORMAT.fullmatch(email) is None:
             raise HTTPException(status_code=400, detail="INVALID_EMAIL_FORMAT")
         
-        if not self.repository.get_account_by_email(email) is None:
+        if not self.repository.get_account_by_userEmail(email) is None:
             raise HTTPException(status_code=400, detail="ALREADY_REGISTERED_EMAIL")
         
         pretoken = create_token({"email": email}, expire=300) # 5분
@@ -50,17 +51,31 @@ class AccountService:
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="EXPIRED_TOKEN")
         
-        if not self.repository.get_account_by_email() is None:
-            raise HTTPException(status_code=401, detail="ALREADY_REGISTERED_EMAIL")
+        if not self.repository.get_account_by_userEmail() is None:
+            raise HTTPException(status_code=400, detail="ALREADY_REGISTERED_EMAIL")
 
         if USER_NAME_FORMAT.fullmatch(request.userName) is None:
-            raise HTTPException(status_code=401, detail="INVALID_USER_NAME")
+            raise HTTPException(status_code=400, detail="INVALID_USER_NAME")
         
         if PASSWORD_FORMAT.fullmatch(request.password) is None:
-            raise HTTPException(status_code=401, detail="INVALID_PASSWORD")
+            raise HTTPException(status_code=400, detail="INVALID_PASSWORD")
           
         account = self.repository.create_account(request.userName, userEmail, request.password)
 
+        return self.login_response(account)
+
+    def login(self, request: LoginRequest):
+        account = self.repository.get_account_by_userEmail(request.userEmail)
+
+        if account is None:
+            raise HTTPException(status_code=400, detail="UNREGISTERED_EMAIL")
+        
+        if account.passwordHash != hash_password(request.password):
+            raise HTTPException(status_code=400, detail="INCORRECT_PASSWORD")
+        
+        return self.login_response(account)
+    
+    def login_response(self, account: Account):
         login_token = create_token(
             payload={
                 "userId": encode_id(account.userId),
@@ -80,3 +95,4 @@ class AccountService:
         )
 
         return response
+    
