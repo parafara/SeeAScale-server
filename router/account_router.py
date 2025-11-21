@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Cookie, Depends
 from service.account_service import AccountService
 from model.account_model import PreregisterRequest, AccountCreateRequest, LoginRequest
 
@@ -23,3 +23,7 @@ def login(request: LoginRequest, accountService: AccountService = Depends()):
 @router.post("/logout")
 def login(accountService: AccountService = Depends()):
     return accountService.logout()
+
+@router.get("/info")
+def get_login_info(login_token: str | None = Cookie(default=None), accountService: AccountService = Depends()):
+    return accountService.get_login_info(login_token)

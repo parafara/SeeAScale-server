@@ -107,3 +107,15 @@ class AccountService:
 
         return response
 
+    def get_login_info(self, login_token: str | None):
+        if login_token is None:
+            raise HTTPException(status_code=401, detail="NOT_LOGINED")
+        
+        try:
+            user_info = verify_token(login_token)
+        except jwt.InvalidSignatureError:
+            raise HTTPException(status_code=401, detail="INVALID_TOKEN")
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="EXPIRED_TOKEN")
+        
+        return {"userId": user_info["userId"], "userName": user_info["userName"]}
