@@ -98,7 +98,12 @@ class AccountService:
     
     def logout(self):
         response = Response()
-        response.delete_cookie("login_token")
+        response.delete_cookie(
+            key="login_token",
+            httponly=True,
+            samesite="strict",
+            secure = not COOKIE_SECURE_OPTION is None
+        )
 
         return response
 
