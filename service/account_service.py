@@ -14,7 +14,7 @@ load_dotenv()
 COOKIE_SECURE_OPTION = os.getenv("COOKIE_SECURE_OPTION", None)
 
 EMAIL_FORMAT = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
-USER_NAME_FORMAT = re.compile(r"^[가-힣A-Za-z0-9_]+$")
+USER_NAME_FORMAT = re.compile(r"^[가-힣A-Za-z0-9_]{2,16}$")
 PASSWORD_FORMAT = re.compile(r"^[A-Za-z0-9!@#$-_.?]{8,}$")
 
 class AccountService:
