@@ -1,12 +1,6 @@
 from hashlib import sha256
 from hashids import Hashids
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-HASH_PAPPER = os.getenv("HASH_PAPPER").encode()
-HASH_ID_SALT = os.getenv("HASH_ID_SALT")
+from utils.constant import HASH_PAPPER, HASH_ID_SALT
 
 hashid = Hashids(HASH_ID_SALT, 16)
 

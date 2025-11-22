@@ -1,13 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
+from utils.constant import DB_URL, RELEASE
 
-load_dotenv()
-
-DB_URL = os.getenv("DB_URL")
-
-engine = create_engine(DB_URL, echo=True, future=True)
+engine = create_engine(DB_URL, echo=not RELEASE, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():

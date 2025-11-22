@@ -1,13 +1,6 @@
 import smtplib
 from email.message import EmailMessage
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 465
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+from utils.constant import SMTP_SERVER, SMTP_PORT, SMTP_PASSWORD
 
 def send_preregister_mail(To: str, Message: str):
     msg = EmailMessage()
@@ -17,5 +10,5 @@ def send_preregister_mail(To: str, Message: str):
     msg['Subject'] = "[See A Scale] 회원가입 이메일 인증"
 
     with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
-        server.login("seeascale.auth@gmail.com", EMAIL_PASSWORD)
+        server.login("seeascale.auth@gmail.com", SMTP_PASSWORD)
         server.send_message(msg)
