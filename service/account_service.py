@@ -63,18 +63,16 @@ class AccountService:
             samesite="strict",
             secure=RELEASE
         )
-
         return response
-    
+
     def logout(self):
-        response = Response(status_code=200)
+        response = Response(status_code=204)
         response.delete_cookie(
             key="login_token",
             httponly=True,
             samesite="strict",
             secure=RELEASE
         )
-
         return response
 
     def get_logined_user_info(self, login_token: dict):
