@@ -5,12 +5,13 @@ load_dotenv()
 
 # global
 RELEASE = not os.getenv("RELEASE") is None
+IMAGE_STORAGE_PATH = os.getenv("IMAGE_STORAGE_PATH")
 
 # format
 EMAIL_FORMAT = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 USER_NAME_FORMAT = r"^[가-힣A-Za-z0-9_]{1,16}$"
-THING_NAME_FORMAT = r"^[가-힣A-Za-z0-9_]{1,32}$"
-PASSWORD_FORMAT = r"^[A-Za-z0-9!@#$-_.?]{8,}$"
+THING_NAME_FORMAT = r"^[가-힣A-Za-z0-9_\- ]{1,32}$"
+PASSWORD_FORMAT = r"^[A-Za-z0-9!@#$_.?-]{8,}$"
 
 # constant record
 PREREGISTER_EXPIRY_PERIOD = 10 * 60

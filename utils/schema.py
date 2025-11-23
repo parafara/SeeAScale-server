@@ -1,7 +1,8 @@
 from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.dialects.mysql import INTEGER, VARCHAR, BINARY, TINYINT, DATETIME
+from sqlalchemy.dialects.mysql import INTEGER, DECIMAL, VARCHAR, BINARY, TINYINT, DATETIME
 from datetime import datetime
+from decimal import Decimal
 from typing import List
 
 class Base(DeclarativeBase):
@@ -12,7 +13,7 @@ class Account(Base):
 
     userId: Mapped[int] = mapped_column(INTEGER(unsigned=True), primary_key=True, autoincrement=True)
     userName: Mapped[str] = mapped_column(VARCHAR(16), nullable=False)
-    userEmail: Mapped[str] = mapped_column(VARCHAR(100), index=True, unique=True, nullable=False)
+    userEmail: Mapped[str] = mapped_column(VARCHAR(100), unique=True, nullable=False)
     passwordHash: Mapped[bytes] = mapped_column(BINARY(32), nullable=False)
 
     things: Mapped[List["Thing"]] = relationship("Thing", back_populates="account")
@@ -23,10 +24,10 @@ class Thing(Base):
     thingId: Mapped[int] = mapped_column(INTEGER(unsigned=True), primary_key=True, autoincrement=True)
     thingName: Mapped[str] = mapped_column(VARCHAR(32), nullable=False)
     prefix: Mapped[int] = mapped_column(TINYINT, nullable=False)
-    quantity: Mapped[int] = mapped_column(INTEGER(unsigned=True), nullable=False)
+    quantity: Mapped[Decimal] = mapped_column(DECIMAL(5, 2, unsigned=True), nullable=False)
     likesCount: Mapped[int] = mapped_column(INTEGER(unsigned=True), nullable=False)
     commentCount: Mapped[int] = mapped_column(INTEGER(unsigned=True), nullable=False)
-    explaination: Mapped[str] = mapped_column(VARCHAR(500), nullable=False)
+    explanation: Mapped[str] = mapped_column(VARCHAR(500), nullable=False)
     createdAt: Mapped[datetime] = mapped_column(DATETIME, nullable=False)
     modifiedAt: Mapped[datetime] = mapped_column(DATETIME, nullable=False)
     createdBy: Mapped[int] = mapped_column(INTEGER(unsigned=True), ForeignKey("Account.userId"), nullable=False)

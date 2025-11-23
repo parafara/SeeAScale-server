@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from service.account_service import AccountService
 from model.account_model import PreregisterRequest, AccountCreateRequest, LoginRequest
-from utils.cookie_manager import get_login_token
+from utils.preprocessor import get_login_token
 
-router = APIRouter(prefix="/auth", tags=["/auth"])
+router = APIRouter(prefix="/account", tags=["/account"])
 
 @router.post("/preregister")
 def preregister(request: PreregisterRequest, service: AccountService = Depends()):
