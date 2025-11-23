@@ -33,6 +33,7 @@ class ThingSerivce:
         canvas = canvas.resize((512, 512), Image.LANCZOS)
         
         canvas.save(f"{IMAGE_STORAGE_PATH}/{thing.thingId}.jpg", format="JPEG", quality=90)
+        canvas.close()
         thingImage.close()
 
         response = ThingSummaryResponse(
