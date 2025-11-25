@@ -20,3 +20,6 @@ class ThingSummaryResponse(BaseModel):
     modifiedAt: datetime
     createrId: str
     createrName: str
+
+class ThingResponse(ThingSummaryResponse):
+    explanation: str

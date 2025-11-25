@@ -15,5 +15,9 @@ async def create_thing(
     return service.create_thing(request=request, imageFile = await imageFile.read(), login_token=login_token)
 
 @router.get("")
-def get_thing_list(prefix: int, page: int = 0, service: ThingSerivce = Depends()):
+def get_thing_list(prefix: int = 0, page: int = 0, service: ThingSerivce = Depends()):
     return service.get_thing_list(prefix, page)
+
+@router.get("/{thingId:str}")
+def get_thing(thingId: str, service: ThingSerivce = Depends()):
+    return service.get_thing(thingId)

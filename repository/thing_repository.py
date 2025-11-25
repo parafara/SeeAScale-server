@@ -34,3 +34,44 @@ class ThingRepository:
     def get_thing_list(self, prefix: int, page: int) -> List[Thing]:
         statement = select(Thing).where(Thing.prefix == prefix).order_by(Thing.quantity).offset(page * 20).limit(20)
         return self.db.execute(statement).scalars().all()
+    
+    def get_thing(self, thingId: int) -> Thing | None:
+        statement = select(Thing).where(Thing.thingId == thingId)
+        return self.db.execute(statement).scalar_one_or_none()
+
+    def modify_thing(
+        self,
+        thingId: int,
+        thingName: str | None = None,
+        quantity: int | None = None,
+        prefix: int | None = None,
+        explanation: str | None = None
+    ) -> Thing | None:
+        statement = select(Thing).where(Thing.thingId == thingId)
+        thing = self.db.execute(statement).scalar_one_or_none()
+
+        if thing is None:
+            return thing
+        
+        if thingName:
+            thing.thingName = thingName
+        
+        if quantity:
+            thing.quantity = quantity
+
+        if prefix:
+            thing.prefix = prefix
+
+        if explanation:
+            thing.explanation = explanation
+
+        self.db.commit()
+        
+        return thing
+
+    def delete_thing(self, thingId: int) -> None:
+        statement = select(Thing).where(Thing.thingId == thingId)
+        thing = self.db.execute(statement).scalar_one_or_none()
+        
+        if thing:
+            self.db.delete(thing)

@@ -1,6 +1,6 @@
-from fastapi import HTTPException, Depends
+from fastapi import Response, HTTPException, Depends
 from repository.thing_repository import ThingRepository
-from model.thing_model import ThingCreateRequest, ThingSummaryResponse
+from model.thing_model import ThingCreateRequest, ThingSummaryResponse, ThingResponse
 from utils.crypto_manager import encode_id, decode_id
 from utils.mecro import unit_standardization
 from utils.constant import IMAGE_STORAGE_PATH
@@ -67,4 +67,26 @@ class ThingSerivce:
             ) for i in things
         ]
 
+        return response
+
+    def get_thing(self, thingId: str):
+        thing = self.repository.get_thing(decode_id(thingId))
+
+        response = Response(status_code=404)
+        
+        if thing:
+            response = ThingResponse(
+                thingId = encode_id(thing.thingId),
+                thingName = thing.thingName,
+                prefix = thing.prefix,
+                quantity = str(thing.quantity),
+                explanation = thing.explanation,
+                likesCount = thing.likesCount,
+                commentCount = thing.commentCount,
+                createdAt = thing.createdAt,
+                modifiedAt = thing.modifiedAt,
+                createrId = encode_id(thing.account.userId),
+                createrName = thing.account.userName
+            )
+        
         return response
