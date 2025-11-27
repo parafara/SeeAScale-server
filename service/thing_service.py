@@ -125,3 +125,16 @@ class ThingSerivce:
         )
         
         return response
+
+    def delete_thing(self, thingId: str, login_token: dict):
+        thingId: int = decode_id(thingId)
+        userId: int = decode_id(login_token["userId"])
+
+        thing = self.repository.get_thing(thingId=thingId)
+        
+        if thing.account.userId != userId:
+            raise HTTPException(status_code=403)
+        
+        self.repository.delete_thing(thingId)
+
+        return Response(status_code=200)

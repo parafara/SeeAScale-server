@@ -76,3 +76,5 @@ class ThingRepository:
         
         if thing:
             self.db.delete(thing)
+        
+        self.db.commit()

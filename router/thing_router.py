@@ -25,3 +25,7 @@ def get_thing(thingId: str, service: ThingSerivce = Depends()):
 @router.patch("/{thingId:str}")
 def modify_thing(request: ThingModifyRequest, thingId: str, login_token: dict = Depends(get_login_token), service: ThingSerivce = Depends()):
     return service.modify_thing(request, thingId, login_token)
+
+@router.delete("/{thingId:str}")
+def delete_thing(thingId: str, login_token: dict = Depends(get_login_token), service: ThingSerivce = Depends()):
+    return service.delete_thing(thingId, login_token)
