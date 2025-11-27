@@ -12,7 +12,7 @@ class ThingCreateRequest(BaseModel):
 class ThingModifyRequest(BaseModel):
     thingName: str | None = Field(default=None, pattern=THING_NAME_FORMAT, examples=["물체이름"])
     prefix: int | None = Field(default=None, ge=-10, le=10, examples=[0])
-    quantity: Decimal | None = Field(default=None, examples=[3])
+    quantity: Decimal | None = Field(default=None, examples=["1.5"])
     explaination: str | None = Field(default=None, min_length=0, max_length=500, examples=["설명"])
 
 class ThingSummaryResponse(BaseModel):
