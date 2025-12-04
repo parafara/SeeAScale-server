@@ -1,3 +1,0 @@
-
-class AlreadyLiked(Exception):
-    pass
