@@ -81,3 +81,14 @@ def login(request: AccountLoginRequestDto, service: AccountService = Depends()):
     )
     
     return response
+
+@router.post("/logout")
+def logout():
+    response = Response(status_code=204)
+    response.delete_cookie(
+        key=COOKIE_LOG_IN,
+        httponly=True,
+        secure=RELEASE,
+        samesite="strict"
+    )
+    return response
