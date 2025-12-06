@@ -37,6 +37,21 @@ class ThingRepsitory:
     def get_list(self, prefix: int, page: int) -> list[Thing]:
         statement = select(Thing).where(Thing.prefix == prefix).order_by(Thing.quantity).offset(page * 20).limit(20)
         return self.db.execute(statement).scalars().all()
-    
+
+    def update(
+        self,
+        thing: Thing,
+        title: str | None = None,
+        prefix: int | None = None,
+        quantity: Decimal | None = None,
+        explanation: str | None = None
+    ) -> Thing | None:
+        if title: thing.title = title
+        if prefix: thing.prefix = prefix
+        if quantity: thing.quantity = quantity
+        if explanation: thing.explanation = explanation
+
+        return thing
+
     def commit(self):
         self.db.commit()

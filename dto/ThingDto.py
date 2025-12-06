@@ -9,6 +9,12 @@ class ThingCreateRequestDto(BaseModel):
     quantity: Decimal
     explanation: str
 
+class ThingUpdateRequestDto(BaseModel):
+    title: str | None
+    prefix: int | None
+    quantity: Decimal | None
+    explanation: str | None
+
 class ThingResponseDto(BaseModel):
     thingId: str
     title: str
