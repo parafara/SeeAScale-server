@@ -51,6 +51,8 @@ class ThingRepsitory:
         if quantity: thing.quantity = quantity
         if explanation: thing.explanation = explanation
 
+        thing.modifiedAt = datetime.now()
+
         return thing
 
     def delete(self, thing: Thing) -> None:
