@@ -42,3 +42,24 @@ async def create(
     )
 
     return response
+
+@router.get("/{thingId:str}")
+def get(thingId: str, service: ThingService = Depends()):
+    thing = service.get(decode_id(thingId))
+    if thing is None: raise HTTPException(status_code=404)
+
+    response = ThingResponseDto(
+        thingId=encode_id(thing.thingId),
+        title=thing.title,
+        prefix=thing.prefix,
+        quantity=thing.quantity,
+        explanation=thing.explanation,
+        likesCount=thing.likesCount,
+        commentCount=thing.commentCount,
+        createdAt=thing.createdAt,
+        modifiedAt=thing.modifiedAt,
+        createrId=encode_id(thing.createrId),
+        createrName=thing.createrName,
+    ) 
+
+    return response

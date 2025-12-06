@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy import select
 from utils.database import Session, get_db
-from utils.entity import Thing, Account
+from utils.entity import Thing
 from datetime import datetime
 from decimal import Decimal
 
@@ -29,6 +29,10 @@ class ThingRepsitory:
         self.db.refresh(thing)
 
         return thing
+    
+    def get(self, thingId: int) -> Thing | None:
+        statement = select(Thing).where(Thing.thingId == thingId)
+        return self.db.execute(statement).scalar_one_or_none()
     
     def commit(self):
         self.db.commit()

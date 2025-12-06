@@ -39,7 +39,16 @@ class ThingService:
 
         self.repository.commit()
         return result
-    
+
+    def get(self, thingId: int) -> ThingInternalDto | None:
+        thing = self.repository.get(thingId)
+
+        if thing is None: return None
+
+        result = ThingInternalDto.model_validate(thing)
+        result.createrName = thing.creater.name
+
+        return result
 
 def unit_standardization(prefix: int, quantity: Decimal) -> Decimal:
     while prefix > 3 and quantity < 1:
