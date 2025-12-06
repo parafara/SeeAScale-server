@@ -1,4 +1,4 @@
-from fastapi import UploadFile, Depends
+from fastapi import Depends
 from repository.ThingRepository import ThingRepsitory
 from dto.ThingDto import ThingInternalDto
 from utils.constant import IMAGE_STORAGE_PATH
@@ -34,8 +34,7 @@ class ThingService:
         processedImage.save(f"{IMAGE_STORAGE_PATH}/{thing.thingId}.jpeg", format="JPEG")
         processedImage.close()
 
-        result = ThingInternalDto.model_validate(thing)
-        result.createrName = thing.creater.name
+        result = thing_to_internal_dto(thing)
 
         self.repository.commit()
         return result
@@ -45,10 +44,21 @@ class ThingService:
 
         if thing is None: return None
 
-        result = ThingInternalDto.model_validate(thing)
-        result.createrName = thing.creater.name
+        result = thing_to_internal_dto(thing)
 
         return result
+    
+    def get_list(self, prefix: int, page: int) -> list[ThingInternalDto]:
+        things = self.repository.get_list(prefix, page)
+
+        result = [thing_to_internal_dto(thing) for thing in things]
+
+        return result
+
+def thing_to_internal_dto(thing) -> ThingInternalDto:
+    result = ThingInternalDto.model_validate(thing)
+    result.createrName = thing.creater.name
+    return result
 
 def unit_standardization(prefix: int, quantity: Decimal) -> Decimal:
     while prefix > 3 and quantity < 1:

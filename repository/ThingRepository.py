@@ -34,5 +34,9 @@ class ThingRepsitory:
         statement = select(Thing).where(Thing.thingId == thingId)
         return self.db.execute(statement).scalar_one_or_none()
     
+    def get_list(self, prefix: int, page: int) -> list[Thing]:
+        statement = select(Thing).where(Thing.prefix == prefix).order_by(Thing.quantity).offset(page * 20).limit(20)
+        return self.db.execute(statement).scalars().all()
+    
     def commit(self):
         self.db.commit()
