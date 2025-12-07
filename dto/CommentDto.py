@@ -4,6 +4,9 @@ from datetime import datetime
 class CommentCreateRequestDto(BaseModel):
     content: str = Field(min_length=0, max_length=200)
 
+class CommentUpdateRequestDto(BaseModel):
+    content: str = Field(min_length=0, max_length=200)
+
 class CommentResponseDto(BaseModel):
     commentId: str
     content: str

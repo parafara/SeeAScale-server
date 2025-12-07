@@ -4,6 +4,8 @@ from dto.CommentDto import CommentInternalDto
 
 class CommentServiceException:
     class NotFoundThing(Exception): pass
+    class NotFoundComment(Exception): pass
+    class NoAuthority(Exception): pass
 
 class CommentService:
     def __init__(self, repository: CommentRepository = Depends()):
@@ -26,6 +28,17 @@ class CommentService:
 
         result = [comment_to_internal_dto(comment) for comment in comments]
 
+        return result
+    
+    def update(self, commentId: int, accountId: int, content: str):
+        comment = self.repository.get(commentId)
+        if comment is None: raise CommentServiceException.NotFoundComment()
+        if comment.createrId != accountId: raise CommentServiceException.NoAuthority()
+
+        comment = self.repository.update(comment, content)
+
+        result = comment_to_internal_dto(comment)
+        self.repository.commit()
         return result
 
 def comment_to_internal_dto(comment: Comment) -> CommentInternalDto:

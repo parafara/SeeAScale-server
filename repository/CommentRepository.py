@@ -25,6 +25,10 @@ class CommentRepository:
 
         return comment
     
+    def get(self, commentId: int) -> Comment | None:
+        statement = select(Comment).where(Comment.commentId == commentId)
+        return self.db.execute(statement).scalar_one_or_none()
+    
     def get_list(self, thingId: int) -> list[Comment]:
         statement = select(Thing).where(Thing.thingId == thingId)
         thing = self.db.execute(statement).scalar_one_or_none()
@@ -32,6 +36,11 @@ class CommentRepository:
         if thing is None: return None
         
         return thing.comments
+    
+    def update(self, comment: Comment, content: str) -> Comment:
+        comment.content = content
+        comment.modifiedAt = datetime.now()
+        return comment
     
     def get_thing(self, thingId: int) -> Thing | None:
         statement = select(Thing).where(Thing.thingId == thingId)
