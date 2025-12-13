@@ -14,12 +14,12 @@ class LikeRepository:
     
     def delete(self, thingId: int, accountId: int) -> None:
         statement = select(Like).where(and_(Like.thingId == thingId, Like.accountId == accountId))
-        like = self.db.execute(statement)
+        like = self.db.execute(statement).scalar_one_or_none()
         self.db.delete(like)
 
     def exist(self, thingId: int, accountId: int) -> bool:
         statement = select(Like).where(and_(Like.thingId == thingId, Like.accountId == accountId))
-        like = self.db.execute(statement)
+        like = self.db.execute(statement).scalar_one_or_none()
         return not like is None
     
     def commit(self):
