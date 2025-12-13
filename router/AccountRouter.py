@@ -3,10 +3,10 @@ from fastapi.responses import JSONResponse
 from service.AccountService import AccountService, AccountServiceException
 from dto.AccountDto import AccountPreregisterRequestDto, AccountCreateRequestDto, AccountLoginRequestDto
 from utils.crypto_manager import create_token, encode_id
-from utils.request_manager import get_log_in_token
+from utils.request_manager import RequestManagerException, get_log_in_token
 from utils.constant import (
     RELEASE,
-    ALREADY_REGISTERED, INVALID_TOKEN, EXPIRED_TOKEN, UNREGISTERED, INCORRECT_PASSWORD,
+    ALREADY_REGISTERED, INVALID_TOKEN, EXPIRED_TOKEN, UNREGISTERED, INCORRECT_PASSWORD, NOT_LOGGED_IN,
     COOKIE_LOG_IN,
     LOG_IN_TOKEN_EXPIRY_PERIOD
 )
@@ -14,7 +14,10 @@ from utils.constant import (
 router = APIRouter(prefix="/account", tags=["account"])
 
 @router.post("/preregister")
-def preregister(request: AccountPreregisterRequestDto, service: AccountService = Depends()):
+def preregister(
+    request: AccountPreregisterRequestDto,
+    service: AccountService = Depends()
+):
     try:
         service.preregister(request.email, request.name, request.password)
     except AccountServiceException.AreadyRegisteredEmail:
@@ -24,7 +27,10 @@ def preregister(request: AccountPreregisterRequestDto, service: AccountService =
     return response
 
 @router.post("")
-def create(request: AccountCreateRequestDto, service: AccountService = Depends()):
+def create(
+    request: AccountCreateRequestDto,
+    service: AccountService = Depends()
+):
     try:
         account = service.create(request.signUpToken)
     except AccountServiceException.InvalidSignupToken:
@@ -34,28 +40,13 @@ def create(request: AccountCreateRequestDto, service: AccountService = Depends()
     except AccountServiceException.AreadyRegisteredEmail:
         raise HTTPException(status_code=409, detail=ALREADY_REGISTERED)
 
-    logInToken = create_token(
-        {
-            "accountId": encode_id(account.accountId),
-            "name": account.name
-        },
-        expire=LOG_IN_TOKEN_EXPIRY_PERIOD
-    )
-
-    response = JSONResponse(content={"name": account.name}, status_code=201)
-    response.set_cookie(
-        key=COOKIE_LOG_IN,
-        value=logInToken,
-        max_age=LOG_IN_TOKEN_EXPIRY_PERIOD,
-        httponly=True,
-        secure=RELEASE,
-        samesite="strict"
-    )
-    
-    return response
+    return create_log_in_response(account.accountId, account.name, status_code=201)
 
 @router.post("/login")
-def login(request: AccountLoginRequestDto, service: AccountService = Depends()):
+def login(
+    request: AccountLoginRequestDto,
+    service: AccountService = Depends()
+):
     try:
         account = service.login(request.email, request.password)
     except AccountServiceException.UnregisteredEmail:
@@ -63,25 +54,7 @@ def login(request: AccountLoginRequestDto, service: AccountService = Depends()):
     except AccountServiceException.IncorrectPassword:
         raise HTTPException(status_code=401, detail=INCORRECT_PASSWORD)
 
-    logInToken = create_token(
-        {
-            "accountId": encode_id(account.accountId),
-            "name": account.name
-        },
-        expire=LOG_IN_TOKEN_EXPIRY_PERIOD
-    )
-
-    response = Response(status_code=204)
-    response.set_cookie(
-        key=COOKIE_LOG_IN,
-        value=logInToken,
-        max_age=LOG_IN_TOKEN_EXPIRY_PERIOD,
-        httponly=True,
-        secure=RELEASE,
-        samesite="strict"
-    )
-    
-    return response
+    return create_log_in_response(account.accountId, account.name)
 
 @router.post("/logout")
 def logout():
@@ -95,5 +68,28 @@ def logout():
     return response
 
 @router.get("/my-name")
-def get_my_name(logInToken: dict = Depends(get_log_in_token)):
+def get_my_name(
+    logInToken: dict | None = Depends(get_log_in_token)
+):
+    if logInToken is None: raise RequestManagerException.NotLoggedIn()
     return {"name": logInToken["name"]}
+
+
+def create_log_in_response(accountId: int, name: str, status_code: int = 200) -> Response:
+    logInToken = create_token(
+        {
+            "accountId": encode_id(accountId),
+            "name": name
+        },
+        expire=LOG_IN_TOKEN_EXPIRY_PERIOD
+    )
+    response = JSONResponse(content={"name": name}, status_code=status_code)
+    response.set_cookie(
+        key=COOKIE_LOG_IN,
+        value=logInToken,
+        max_age=LOG_IN_TOKEN_EXPIRY_PERIOD,
+        httponly=True,
+        secure=RELEASE,
+        samesite="strict"
+    )
+    return response

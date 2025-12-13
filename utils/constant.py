@@ -11,6 +11,7 @@ IMAGE_STORAGE_PATH = os.getenv("IMAGE_STORAGE_PATH")
 EMAIL_FORMAT = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 NAME_FORMAT = r"^[가-힣A-Za-z0-9_]{1,32}$"
 PASSWORD_FORMAT = r"^[A-Za-z0-9!@#$_.?-]{8,}$"
+DECIMAL_FORMAT = r"^[0-9]+(\.[0-9]+)?$"
 
 # constant record
 SIGN_UP_TOKEN_EXPIRY_PERIOD = 10 * 60 # 10 min

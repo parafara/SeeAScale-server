@@ -7,9 +7,8 @@ from decimal import Decimal
 class RequestManagerException:
     class NotLoggedIn(Exception): pass
 
-def get_log_in_token(logInToken: str | None = Cookie(None, alias=COOKIE_LOG_IN)) -> dict:
-    if logInToken is None:
-        raise RequestManagerException.NotLoggedIn()
+def get_log_in_token(logInToken: str | None = Cookie(None, alias=COOKIE_LOG_IN)) -> dict | None:
+    if logInToken is None: return None
     return verify_token(logInToken)
 
 async def thing_create_body(
