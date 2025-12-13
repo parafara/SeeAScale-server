@@ -4,3 +4,7 @@ pymysql
 pyjwt
 sqlalchemy
 fastapi
+uvicorn
+dotenv
+pillow
+python-multipart
