@@ -18,6 +18,7 @@ class Account(Base):
 
     things: Mapped[List["Thing"]] = relationship("Thing", back_populates="creater")
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="creater")
+    likes: Mapped[List["Like"]] = relationship("Like", back_populates="creater")
 
 class Thing(Base):
     __tablename__ = "Thing"
@@ -35,6 +36,7 @@ class Thing(Base):
 
     creater: Mapped["Account"] = relationship("Account", back_populates="things")
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="thing")
+    likes: Mapped[List["Like"]] = relationship("Like", back_populates="thing")
 
     __table_args__ = (
         CheckConstraint("prefix >= -10 AND prefix <= 10", name="check_prefix_range"),
@@ -52,6 +54,15 @@ class Comment(Base):
     
     creater: Mapped["Account"] = relationship("Account", back_populates="comments")
     thing: Mapped["Thing"] = relationship("Thing", back_populates="comments")
+
+class Like(Base):
+    __tablename__ = "Like"
+
+    createrId: Mapped[int] = mapped_column(INTEGER(unsigned=True), ForeignKey("Account.accountId"), primary_key=True)
+    thingId: Mapped[int] = mapped_column(INTEGER(unsigned=True), ForeignKey("Thing.thingId"), primary_key=True)
+
+    creater: Mapped["Account"] = relationship("Account", back_populates="likes")
+    thing: Mapped["Thing"] = relationship("Thing", back_populates="likes")
 
 if __name__ == "__main__":
     from database import engine
