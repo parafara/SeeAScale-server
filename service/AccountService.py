@@ -10,6 +10,8 @@ class AccountServiceException:
     class AreadyRegisteredEmail(Exception): pass
     class InvalidSignupToken(Exception): pass
     class ExpiredSignupToken(Exception): pass
+    class UnregisteredEmail(Exception): pass
+    class IncorrectPassword(Exception): pass
 
 class AccountService:
     def __init__(self, repository: AccountRepository = Depends()):
@@ -20,7 +22,6 @@ class AccountService:
             raise AccountServiceException.AreadyRegisteredEmail()
         
         hashedPassword = hash_password(password)
-    
         payload = {
             "email": email,
             "name": name,
@@ -36,19 +37,26 @@ class AccountService:
             payload = decrypt_dict(signUpToken)
         except:
             raise AccountServiceException.InvalidSignupToken()
-
-        if payload["exp"] < SIGN_UP_TOKEN_EXPIRY_PERIOD:
+        if payload["exp"] < int(time.time()):
             raise AccountServiceException.ExpiredSignupToken()
 
         email = payload["email"]
-        name = payload["email"]
+        name = payload["name"]
         hashedPassword = bytes.fromhex(payload["hashedPassword"])
-
         if not self.repository.get_by_email(email) is None:
             raise AccountServiceException.AreadyRegisteredEmail()
-        
         account = self.repository.create(email, name, hashedPassword)
         result = AccountInternalDto.model_validate(account)
 
         self.repository.commit()
+        return result
+    
+    def login(self, email: str, password: str):
+        account = self.repository.get_by_email(email)
+        if account is None:
+            raise AccountServiceException.UnregisteredEmail()
+        if account.hashedPassword != hash_password(password):
+            raise AccountServiceException.IncorrectPassword()
+        result = AccountInternalDto.model_validate(account)
+        
         return result

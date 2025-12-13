@@ -9,11 +9,9 @@ class AccountRepository:
 
     def create(self, email: str, name: str, hashedPassword: bytes) -> Account:
         account = Account(email=email, name=name, hashedPassword=hashedPassword)
-
         self.db.add(account)
         self.db.flush()
         self.db.refresh(account)
-
         return account
     
     def get_by_email(self, email: str) -> Account | None:

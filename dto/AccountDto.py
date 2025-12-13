@@ -9,6 +9,10 @@ class AccountPreregisterRequestDto(BaseModel):
 class AccountCreateRequestDto(BaseModel):
     signUpToken: str
 
+class AccountLoginRequestDto(BaseModel):
+    email: str = Field(pattern=EMAIL_FORMAT, examples=["example@gmail.com"])
+    password: str = Field(pattern=PASSWORD_FORMAT, examples=["password"])
+
 class AccountInternalDto(BaseModel):
     accountId: int
     email: str
