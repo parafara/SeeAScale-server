@@ -20,6 +20,6 @@ def delete(thingId: str, logInToken = Depends(get_log_in_token), service: LikeSe
     if logInToken is None: raise RequestManagerException.NotLoggedIn()
     thingId, accountId = decode_id(thingId), decode_id(logInToken["accountId"])
     try: service.delete(thingId, accountId)
-    except LikeServiceException.AlreadyLiked: raise HTTPException(status_code=404)
+    except LikeServiceException.NotLiked: raise HTTPException(status_code=404)
     return Response(status_code=200)
 
