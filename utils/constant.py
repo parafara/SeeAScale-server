@@ -6,6 +6,7 @@ load_dotenv()
 # global
 RELEASE = not os.getenv("RELEASE") is None
 IMAGE_STORAGE_PATH = os.getenv("IMAGE_STORAGE_PATH")
+FRONTEND_HOST = os.getenv("FRONTEND_HOST")
 
 # format
 EMAIL_FORMAT = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"

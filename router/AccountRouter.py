@@ -63,7 +63,7 @@ def logout():
         key=COOKIE_LOG_IN,
         httponly=True,
         secure=RELEASE,
-        samesite="strict"
+        samesite="none"
     )
     return response
 
@@ -90,6 +90,6 @@ def create_log_in_response(accountId: int, name: str, status_code: int = 200) ->
         max_age=LOG_IN_TOKEN_EXPIRY_PERIOD,
         httponly=True,
         secure=RELEASE,
-        samesite="strict"
+        samesite="none"
     )
     return response
