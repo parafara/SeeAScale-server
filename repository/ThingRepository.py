@@ -29,8 +29,8 @@ class ThingRepsitory:
         return thing
     
     def get_list(self, prefix: int, page: int) -> list[Thing]:
-        if page >= 0: statement = select(Thing).where(Thing.prefix >= prefix).order_by(asc(Thing.quantity)).offset(page * 20).limit(20)
-        else: statement = select(Thing).where(Thing.prefix < prefix).order_by(desc(Thing.quantity)).offset(-(page + 1) * 20).limit(20)
+        if page >= 0: statement = select(Thing).where(Thing.prefix >= prefix).order_by(asc(Thing.prefix), asc(Thing.quantity)).offset(page * 20).limit(20)
+        else: statement = select(Thing).where(Thing.prefix < prefix).order_by(asc(Thing.prefix), desc(Thing.quantity)).offset(-(page + 1) * 20).limit(20)
         return self.db.execute(statement).scalars().all()
 
     def get(self, thingId: int) -> Thing | None:
